@@ -3,9 +3,10 @@ import Image from '@/node_modules/next/image';
 import Link from '@/node_modules/next/link';
 import React from 'react';
 import AuthProviders from './AuthProviders';
+import { getCurrentUser } from '@/lib/session';
 
-export default function Navbar() {
-	const session = {};
+export default async function Navbar() {
+	const session = await getCurrentUser();
 
 	return (
 		<nav className="flexBetween navbar">
@@ -22,9 +23,18 @@ export default function Navbar() {
 				</ul>
 			</div>
 			<div className="flexCenter gap-4">
-				{session ? (
+				{session?.user ? (
 					<>
-						User photo
+						{session.user.image ? (
+							<Image
+								src={session.user.image}
+								height={50}
+								width={50}
+								alt={session.user.name}
+								className="rounded-full"
+							/>
+						) : null}
+
 						<Link href="/create-project">Share work</Link>
 					</>
 				) : (
