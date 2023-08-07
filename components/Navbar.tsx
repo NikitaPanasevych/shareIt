@@ -4,6 +4,7 @@ import Link from '@/node_modules/next/link';
 import React from 'react';
 import AuthProviders from './AuthProviders';
 import { getCurrentUser } from '@/lib/session';
+import ProfileMenu from './ProfileMenu';
 
 export default async function Navbar() {
 	const session = await getCurrentUser();
@@ -25,15 +26,7 @@ export default async function Navbar() {
 			<div className="flexCenter gap-4">
 				{session?.user ? (
 					<>
-						{session.user.image ? (
-							<Image
-								src={session.user.image}
-								height={50}
-								width={50}
-								alt={session.user.name}
-								className="rounded-full"
-							/>
-						) : null}
+						<ProfileMenu session={session} />
 
 						<Link href="/create-project">Share work</Link>
 					</>
