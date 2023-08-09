@@ -7,6 +7,7 @@ import { categoryFilters } from '@/constants';
 import CustomMenu from './CustomMenu';
 import { useState } from 'react';
 import { Button } from './Button';
+import { createNewProject, fetchToken } from '@/lib/actions';
 
 interface Props {
     type: string;
@@ -14,7 +15,23 @@ interface Props {
 }
 
 export default function ProjectForm({ type, session }: Props) {
-    const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {};
+    const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        setIsSubmitting(true);
+
+        const token = await fetchToken();
+
+        try {
+            if (type === 'create') {
+                await createNewProject(form, session?.user?.id, token);
+            }
+        } catch (err) {
+            console.log(err);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     const handleChangeImage = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
