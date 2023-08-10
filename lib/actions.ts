@@ -8,7 +8,13 @@ const apiUrl = isProductions ? process.env.NEXT_PUBLIC_GRAFBASE_API_URL || '' : 
 const apiKey = isProductions ? process.env.NEXT_PUBLIC_GRAFBASE_API_KEY || '' : '123456789';
 const serverUrl = isProductions ? process.env.NEXT_PUBLIC_GRAFBASE_SERVER_URL || '' : 'http://localhost:3000';
 
-const client = new GraphQLClient(apiUrl);
+const clientOptions = {
+    headers: {
+        'x-api-key': apiKey
+    }
+};
+
+const client = new GraphQLClient(apiUrl, clientOptions);
 
 const makeGraphqlRequest = async (query: string, variables = {}) => {
     try {
@@ -48,12 +54,13 @@ export const uploadImage = async (imagePath: string) => {
     try {
         const response = await fetch(`${serverUrl}/api/upload`, {
             method: 'POST',
-            body: JSON.stringify({ path: imagePath })
+            body: JSON.stringify({
+                path: imagePath
+            })
         });
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        throw error;
+        return response.json();
+    } catch (err) {
+        throw err;
     }
 };
 
@@ -66,7 +73,7 @@ export const createNewProject = async (form: ProjectForm, creatorId: string, tok
         const variables = {
             input: {
                 ...form,
-                image: imageUrl,
+                image: imageUrl.url,
                 createdBy: {
                     link: creatorId
                 }

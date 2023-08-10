@@ -5,9 +5,11 @@ import Image from 'next/image';
 import FormField from './FormField';
 import { categoryFilters } from '@/constants';
 import CustomMenu from './CustomMenu';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from './Button';
 import { createNewProject, fetchToken } from '@/lib/actions';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 interface Props {
     type: string;
@@ -15,6 +17,8 @@ interface Props {
 }
 
 export default function ProjectForm({ type, session }: Props) {
+    const router = useRouter();
+
     const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -25,9 +29,12 @@ export default function ProjectForm({ type, session }: Props) {
         try {
             if (type === 'create') {
                 await createNewProject(form, session?.user?.id, token);
+                toast.success('Project created successfully');
+                router.push('/');
             }
         } catch (err) {
             console.log(err);
+            toast.error('Something went wrong');
         } finally {
             setIsSubmitting(false);
         }
