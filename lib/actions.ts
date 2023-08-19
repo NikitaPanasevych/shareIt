@@ -1,5 +1,5 @@
 import { ProjectForm } from '@/common.types';
-import { createProjectMutation, createUserMutation, getUserQuery } from '@/graphql';
+import { allProjectsQuery, createProjectMutation, createUserMutation, getUserQuery, projectsQuery } from '@/graphql';
 import { GraphQLClient } from 'graphql-request';
 
 const isProductions = process.env.NODE_ENV === 'production';
@@ -25,12 +25,10 @@ const makeGraphqlRequest = async (query: string, variables = {}) => {
 };
 
 export const getUser = (email: string) => {
-    client.setHeader('x-api-key', apiKey);
     return makeGraphqlRequest(getUserQuery, { email });
 };
 
 export const createUser = (name: string, email: string, avatarUrl: string) => {
-    client.setHeader('x-api-key', apiKey);
     const variables = {
         input: {
             name,
@@ -83,3 +81,13 @@ export const createNewProject = async (form: ProjectForm, creatorId: string, tok
         return makeGraphqlRequest(createProjectMutation, variables);
     }
 };
+
+export const fetchProjects = (category?: string | null, endcursor?: string | null) => {
+    client.setHeader("x-api-key", apiKey);
+
+    if (!category) {
+        return makeGraphqlRequest(allProjectsQuery, { endcursor });
+      }
+  
+    return makeGraphqlRequest(projectsQuery, { category, endcursor });
+  };
